@@ -1,0 +1,10 @@
+[project]
+name = "py-tipkarska-trka"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "nltk==3.8.1",
+    "pygame==2.5.0",
+]
