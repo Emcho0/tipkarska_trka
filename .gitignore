@@ -8,3 +8,10 @@ wheels/
 
 # Virtual environments
 .venv
+
+
+# Ignore score/score.txt but keep other files in score/
+score/score.txt
+
+# Score
+score/

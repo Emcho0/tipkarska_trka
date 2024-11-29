@@ -2,13 +2,15 @@
 Biblioteke pygame, random, copy i kasnije nltk za vokabular.
 """
 
-# nltk biblioteka za listu rijeci
+import copy
 import random
 
-# Potrebno kako bi igra normalno funkcionisala
-import nltk
+""" Biblioteka za generisanje nasumicnih rijeci kao i 
+installer za modul words"""
 
-nltk.download("words")
+# Ako koristite prvi put, otkomentarišite sljedece linije
+# import nltk
+# nltk.download("words")
 
 import pygame
 from nltk.corpus import words
@@ -47,7 +49,7 @@ active_string = ""
 score = 0
 high_score = 1
 lives = 5
-paused = False
+paused = True
 letters = [
     "a",
     "b",
@@ -82,10 +84,10 @@ new_level = True
 # izbori duzine rijeci (od 2 do 8)
 choices = [False, True, False, False, False, False, False]
 # ucitavati slike, fontove, zvucne efekte i ostalo
-header_font = pygame.font.Font("assets/fonts/Square.ttf", 50)
+header_font = pygame.font.Font("assets/fonts/Monocraft.ttc", 50)
 pause_font = pygame.font.Font("assets/fonts/1up.ttf", 38)
-banner_font = pygame.font.Font("assets/fonts/BungeeInline-Regular.ttf", 28)
-font = pygame.font.Font("assets/fonts/AldotheApache.ttf", 48)
+banner_font = pygame.font.Font("assets/fonts/Square.otf", 38)
+font = pygame.font.Font("assets/fonts/Monocraft.ttc", 48)
 
 
 class Word:
@@ -148,7 +150,7 @@ def draw_screen():
     pygame.draw.line(screen, "white", (0, HEIGHT - 100), (WIDTH, HEIGHT - 100), 2)
     pygame.draw.rect(screen, "black", [0, 0, WIDTH, HEIGHT], 2)
     # Tekst koji prikazuje trenutni nivo, trenutni otkucaji, skor, zivoti
-    screen.blit(header_font.render(f"Nivo:{level}", True, "white"), (10, HEIGHT - 75))
+    screen.blit(header_font.render(f"NIVO:{level}", True, "white"), (10, HEIGHT - 75))
     screen.blit(
         header_font.render(f'"{active_string}"', True, "white"), (270, HEIGHT - 75)
     )
@@ -161,13 +163,39 @@ def draw_screen():
     return pause_but.clicked
 
 
+# Tipka za pauziranje kao i opcije
 def draw_pause():
-    pass
+    choice_commits = copy.deepcopy(choices)
+    surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+    pygame.draw.rect(surface, (0, 0, 0, 100), [100, 100, 600, 300], 0, 5)
+    pygame.draw.rect(surface, (0, 0, 0, 200), [100, 100, 600, 300], 5, 5)
+    # Tipke za meni za pauziranje
+    resume_btn = Button(160, 200, ">", False, surface)
+    resume_btn.draw()
+    quit_btn = Button(410, 200, "X", False, surface)
+    quit_btn.draw()
+    # Definisati tekst za meni za pauziranje
+    surface.blit(header_font.render("MENI", True, "white"), (110, 110))
+    surface.blit(header_font.render("IGRAJ", True, "white"), (200, 175))
+    surface.blit(header_font.render("IZADJI", True, "white"), (450, 175))
+    surface.blit(header_font.render("Duzina rijeci: ", True, "white"), (110, 250))
+    # Definisati tipke za duzinu rijeci (koliko slova ima ta rijec)
+    for i in range(len(choices)):
+        btn = Button(160 + (i * 80), 350, str(i + 2), False, surface)
+        btn.draw()
+        if btn.clicked:
+            if choice_commits[i]:
+                choice_commits[i] = False
+            else:
+                choice_commits[i] = True
+
+        if choices[i]:
+            pygame.draw.circle(surface, "#40a02b", (160 + (i * 80), 350), 35, 5)
+    screen.blit(surface, (0, 0))
+    return resume_btn.clicked, choice_commits, quit_btn.clicked
 
 
 # funkcija koja provjerava korisnikov unos
-
-
 def check_answer(score):
     for word in word_objects:
         if word.text == submit:
@@ -189,7 +217,7 @@ def generate_level():
             include.append((len_indexes[i], len_indexes[i + 1]))
     for i in range(level):
         # brzine od-do koji uticu na tezinu igre
-        speed = random.randint(2, 3)
+        speed = random.randint(2, 4)
         y_pos = random.randint(10 + (i * vertical_spacing), (i + 1) * vertical_spacing)
         x_pos = random.randint(WIDTH, WIDTH + 1000)
         ind_sel = random.choice(include)
@@ -207,7 +235,12 @@ while run:
     pause_but = draw_screen()
 
     if paused:
-        draw_pause()
+        resume_but, changes, quit_but = draw_pause()
+        if resume_but:
+            paused = False
+        if quit_but:
+            # Provjeriti skor prije nego sto se prekine sa igranjem igre
+            run = False
     if new_level and not paused:
         word_objects = generate_level()
         new_level = False
@@ -233,6 +266,7 @@ while run:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            # Provjeriti skor prije nego sto se prekine sa igranjem igre
             run = False
 
         if event.type == pygame.KEYDOWN:
@@ -245,6 +279,15 @@ while run:
                 if event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
                     submit = active_string
                     active_string = ""
-
+            if event.key == pygame.K_ESCAPE:
+                if paused:
+                    paused = False
+                else:
+                    paused = True
+        if event.type == pygame.MOUSEBUTTONUP and paused:
+            if event.button == 1:
+                choices = changes
+    if pause_but:
+        paused = True
     pygame.display.flip()
 pygame.quit()
