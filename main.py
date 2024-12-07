@@ -5,15 +5,17 @@ Biblioteke pygame, random, copy i kasnije nltk za vokabular.
 import copy
 import random
 
+import pygame
+from nltk.corpus import words
+
 """ Biblioteka za generisanje nasumicnih rijeci kao i 
 installer za modul words"""
 
 # Ako koristite prvi put, otkomentarišite sljedece linije
-# import nltk
-# nltk.download("words")
+import nltk
 
-import pygame
-from nltk.corpus import words
+nltk.download("words")
+
 
 pygame.init()
 
@@ -47,7 +49,6 @@ fps = 60
 level = 1
 active_string = ""
 score = 0
-high_score = 1
 lives = 5
 paused = True
 letters = [
@@ -88,6 +89,28 @@ header_font = pygame.font.Font("assets/fonts/Monocraft.ttc", 50)
 pause_font = pygame.font.Font("assets/fonts/1up.ttf", 38)
 banner_font = pygame.font.Font("assets/fonts/Square.otf", 38)
 font = pygame.font.Font("assets/fonts/Monocraft.ttc", 48)
+
+# zvucni efekti i muzika
+pygame.mixer.init()
+pygame.mixer.music.load("assets/sounds/music.mp3")
+pygame.mixer.music.set_volume(0.6)
+# beskonacno se ponavlja muzika
+pygame.mixer.music.play(-1)
+
+click = pygame.mixer.Sound("assets/sounds/mech-click.mp3")
+woosh = pygame.mixer.Sound("assets/sounds/Swoosh.mp3")
+wrong = pygame.mixer.Sound("assets/sounds/Instrument Strum.mp3")
+
+click.set_volume(0.7)
+woosh.set_volume(0.5)
+wrong.set_volume(0.3)
+
+
+# generisati score unutar score.txt fajla
+file = open("score/score.txt", "r")
+read = file.readlines()
+high_score = int(read[0])
+file.close()
 
 
 class Word:
@@ -158,7 +181,7 @@ def draw_screen():
     pause_but = Button(748, HEIGHT - 52, "II", False, screen)
     pause_but.draw()
     screen.blit(banner_font.render(f"Score: {score}", True, "white"), (250, 10))
-    screen.blit(banner_font.render(f"Best: {high_score}", True, "white"), (550, 10))
+    screen.blit(banner_font.render(f"H. score: {high_score}", True, "white"), (550, 10))
     screen.blit(banner_font.render(f"Lives: {lives}", True, "white"), (10, 10))
     return pause_but.clicked
 
@@ -167,8 +190,8 @@ def draw_screen():
 def draw_pause():
     choice_commits = copy.deepcopy(choices)
     surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-    pygame.draw.rect(surface, (0, 0, 0, 100), [100, 100, 600, 300], 0, 5)
-    pygame.draw.rect(surface, (0, 0, 0, 200), [100, 100, 600, 300], 5, 5)
+    pygame.draw.rect(surface, (0, 0, 0, 100), [100, 100, 600, 320], 0, 5)
+    pygame.draw.rect(surface, (0, 0, 0, 200), [100, 100, 600, 320], 5, 5)
     # Tipke za meni za pauziranje
     resume_btn = Button(160, 200, ">", False, surface)
     resume_btn.draw()
@@ -179,6 +202,11 @@ def draw_pause():
     surface.blit(header_font.render("IGRAJ", True, "white"), (200, 175))
     surface.blit(header_font.render("IZADJI", True, "white"), (450, 175))
     surface.blit(header_font.render("Duzina rijeci: ", True, "white"), (110, 250))
+
+    # Kasnije cu integrisati za promjenu jezika (na kojem jeziku ce biti te rijeci)
+
+    # surface.blit(header_font.render("Odaberi jezik: ", True, "white"), (110, 450))
+
     # Definisati tipke za duzinu rijeci (koliko slova ima ta rijec)
     for i in range(len(choices)):
         btn = Button(160 + (i * 80), 350, str(i + 2), False, surface)
@@ -202,7 +230,7 @@ def check_answer(score):
             points = word.speed * len(word.text) * 10 * (len(word.text) / 3)
             score += int(points)
             word_objects.remove(word)
-            # pusti zvuk kada je uspjesan korisnicki unos
+            woosh.play()
     return score
 
 
@@ -217,7 +245,7 @@ def generate_level():
             include.append((len_indexes[i], len_indexes[i + 1]))
     for i in range(level):
         # brzine od-do koji uticu na tezinu igre
-        speed = random.randint(2, 4)
+        speed = random.randint(3, 5)
         y_pos = random.randint(10 + (i * vertical_spacing), (i + 1) * vertical_spacing)
         x_pos = random.randint(WIDTH, WIDTH + 1000)
         ind_sel = random.choice(include)
@@ -226,6 +254,17 @@ def generate_level():
         new_word = Word(text, speed, y_pos, x_pos)
         word_objs.append(new_word)
     return word_objs
+
+
+def check_highscore():
+    global high_score
+    # Ako je score veci od prethodnog postavi ga
+    if score > high_score:
+        high_score = score
+        file = open("score/score.txt", "w")
+
+        file.write(str(int(high_score)))
+        file.close()
 
 
 run = True
@@ -239,7 +278,7 @@ while run:
         if resume_but:
             paused = False
         if quit_but:
-            # Provjeriti skor prije nego sto se prekine sa igranjem igre
+            check_highscore()
             run = False
     if new_level and not paused:
         word_objects = generate_level()
@@ -261,20 +300,21 @@ while run:
         score = check_answer(score)
         submit = ""
         if init == score:
-            # pusti zvuk za netacno kucanje (wrong entry sound)
-            pass
+            wrong.play()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            # Provjeriti skor prije nego sto se prekine sa igranjem igre
+            check_highscore()
             run = False
 
         if event.type == pygame.KEYDOWN:
             if not paused:
                 if event.unicode.lower() in letters:
                     active_string += event.unicode.lower()
+                    click.play()
                 if event.key == pygame.K_BACKSPACE and len(active_string) > 0:
                     active_string = active_string[:-1]
+                    click.play()
                 # Uslov vraca string (rijec) ako je pritisnut razmak ili enter
                 if event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
                     submit = active_string
@@ -289,5 +329,16 @@ while run:
                 choices = changes
     if pause_but:
         paused = True
+
+    if lives < 0:
+        # Ponavlja se igra nakon sto izgubimo sve zivote
+        paused = True
+        level = 1
+        lives = 5
+        word_objects = []
+        new_level = True
+        check_highscore()
+        score = 0
+
     pygame.display.flip()
 pygame.quit()
