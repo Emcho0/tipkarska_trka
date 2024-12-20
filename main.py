@@ -4,36 +4,52 @@ Biblioteke pygame, random, copy i kasnije nltk za vokabular.
 
 import copy
 import random
-
 import pygame
-from nltk.corpus import words
-
-""" Biblioteka za generisanje nasumicnih rijeci kao i 
-installer za modul words"""
-
-# Ako koristite prvi put, otkomentarišite sljedece linije
-import nltk
-
-nltk.download("words")
-
 
 pygame.init()
 
-wordlist = words.words()
-len_indexes = []
-length = 1
 
-# mehanizam za sortiranje liste rijeci
+# Load words from text files
+def load_words(file_path):
+    try:
+        with open(file_path, "r", encoding="utf-8") as file:
+            return [line.strip() for line in file.readlines()]
+    except FileNotFoundError:
+        print(f"Error: The word list for {file_path} is not found.")
+        return []
 
-wordlist.sort(key=len)
 
-for i in range(len(wordlist)):
-    if len(wordlist[i]) > length:
-        length += 1
-        len_indexes.append(i)
+class Language:
+    def __init__(self, languages):
+        self.languages = languages
+        self.current_language = "english"
+        self.wordlist = self.load_words("assets/words/english.txt")
+        self.len_indexes = self.calculate_len_indexes(self.wordlist)
 
-len_indexes.append(len(wordlist))
-print(len_indexes)
+    def load_words(self, file_path):
+        words = load_words(file_path)
+        words.sort(key=len)
+        return words
+
+    def set_language(self, lang):
+        self.current_language = lang
+        self.wordlist = self.load_words(f"assets/words/{lang}.txt")
+        self.len_indexes = self.calculate_len_indexes(self.wordlist)
+
+    def calculate_len_indexes(self, wordlist):
+        len_indexes = []
+        length = 1
+        for i in range(len(wordlist)):
+            if len(wordlist[i]) > length:
+                length += 1
+                len_indexes.append(i)
+        len_indexes.append(len(wordlist))
+        return len_indexes
+
+
+# Initialize the language variable with a default value
+languages = [("E", "english"), ("B", "bosnian")]
+language_manager = Language(languages)
 
 # inicijaliziranje pygame igre
 WIDTH = 800
@@ -49,13 +65,16 @@ fps = 60
 level = 1
 active_string = ""
 score = 0
-lives = 5
+lives = 8
 paused = True
 letters = [
     "a",
     "b",
     "c",
+    "č",
+    "ć",
     "d",
+    "đ",
     "e",
     "f",
     "g",
@@ -64,22 +83,22 @@ letters = [
     "j",
     "k",
     "l",
+    "lj",
     "m",
     "n",
     "o",
     "p",
-    "q",
     "r",
     "s",
+    "š",
     "t",
     "u",
     "v",
-    "w",
-    "x",
-    "y",
     "z",
+    "ž",
 ]
 submit = ""
+
 word_objects = []
 new_level = True
 # izbori duzine rijeci (od 2 do 8)
@@ -105,12 +124,22 @@ click.set_volume(0.7)
 woosh.set_volume(0.5)
 wrong.set_volume(0.3)
 
-
 # generisati score unutar score.txt fajla
-file = open("score/score.txt", "r")
-read = file.readlines()
-high_score = int(read[0])
-file.close()
+try:
+    with open("score/score.txt", "r") as file:
+        read = file.readlines()
+        if read:
+            high_score = int(read[0])
+        else:
+            high_score = 0
+except FileNotFoundError:
+    high_score = 0
+    with open("score/score.txt", "w") as file:
+        file.write("0")
+except ValueError:
+    high_score = 0
+    with open("score/score.txt", "w") as file:
+        file.write("0")
 
 
 class Word:
@@ -190,35 +219,48 @@ def draw_screen():
 def draw_pause():
     choice_commits = copy.deepcopy(choices)
     surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-    pygame.draw.rect(surface, (0, 0, 0, 100), [100, 100, 600, 320], 0, 5)
-    pygame.draw.rect(surface, (0, 0, 0, 200), [100, 100, 600, 320], 5, 5)
+    pygame.draw.rect(surface, (0, 0, 0, 100), [50, 50, 700, 420], 0, 5)
+    pygame.draw.rect(surface, (0, 0, 0, 200), [50, 50, 700, 420], 5, 5)
+
     # Tipke za meni za pauziranje
     resume_btn = Button(160, 200, ">", False, surface)
     resume_btn.draw()
     quit_btn = Button(410, 200, "X", False, surface)
     quit_btn.draw()
+
     # Definisati tekst za meni za pauziranje
-    surface.blit(header_font.render("MENI", True, "white"), (110, 110))
+    surface.blit(header_font.render("MENI", True, "white"), (60, 60))
     surface.blit(header_font.render("IGRAJ", True, "white"), (200, 175))
     surface.blit(header_font.render("IZADJI", True, "white"), (450, 175))
-    surface.blit(header_font.render("Duzina rijeci: ", True, "white"), (110, 250))
-
-    # Kasnije cu integrisati za promjenu jezika (na kojem jeziku ce biti te rijeci)
-
-    # surface.blit(header_font.render("Odaberi jezik: ", True, "white"), (110, 450))
+    surface.blit(header_font.render("Duzina rijeci: ", True, "white"), (60, 250))
 
     # Definisati tipke za duzinu rijeci (koliko slova ima ta rijec)
     for i in range(len(choices)):
         btn = Button(160 + (i * 80), 350, str(i + 2), False, surface)
         btn.draw()
         if btn.clicked:
-            if choice_commits[i]:
-                choice_commits[i] = False
-            else:
-                choice_commits[i] = True
+            choice_commits[i] = not choice_commits[i]
 
         if choices[i]:
             pygame.draw.circle(surface, "#40a02b", (160 + (i * 80), 350), 35, 5)
+
+    # Dodati tekst za odabir jezika
+    surface.blit(header_font.render("Odaberi jezik: ", True, "white"), (65, 395))
+
+    # Definisati tipke za odabir jezika
+    language_buttons = []
+    for idx, (label, lang) in enumerate(languages):
+        btn = Button(160 + (idx * 120), 450, label, False, surface)
+        btn.draw()
+        language_buttons.append((btn, lang))
+
+    for btn, lang in language_buttons:
+        if btn.clicked:
+            language_manager.set_language(lang)
+
+        if language_manager.current_language == lang:
+            pygame.draw.circle(surface, "#40a02b", (btn.x_pos, btn.y_pos), 35, 5)
+
     screen.blit(surface, (0, 0))
     return resume_btn.clicked, choice_commits, quit_btn.clicked
 
@@ -241,16 +283,20 @@ def generate_level():
     if True not in choices:
         choices[0] = True
     for i in range(len(choices)):
-        if choices[i]:
-            include.append((len_indexes[i], len_indexes[i + 1]))
+        if choices[i] and i + 1 < len(language_manager.len_indexes):
+            include.append(
+                (language_manager.len_indexes[i], language_manager.len_indexes[i + 1])
+            )
     for i in range(level):
         # brzine od-do koji uticu na tezinu igre
         speed = random.randint(3, 5)
         y_pos = random.randint(10 + (i * vertical_spacing), (i + 1) * vertical_spacing)
         x_pos = random.randint(WIDTH, WIDTH + 1000)
         ind_sel = random.choice(include)
-        index = random.randint(ind_sel[0], ind_sel[1])
-        text = wordlist[index].lower()
+        index = random.randint(
+            ind_sel[0], ind_sel[1] - 1
+        )  # Ensure index is within bounds
+        text = language_manager.wordlist[index].lower()
         new_word = Word(text, speed, y_pos, x_pos)
         word_objs.append(new_word)
     return word_objs
@@ -334,7 +380,7 @@ while run:
         # Ponavlja se igra nakon sto izgubimo sve zivote
         paused = True
         level = 1
-        lives = 5
+        lives = 8
         word_objects = []
         new_level = True
         check_highscore()
