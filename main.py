@@ -1,15 +1,16 @@
 """Igra: "Tipkarska trka" u pythonu uz pomoc pygame
-Biblioteke pygame, random, copy i kasnije nltk za vokabular.
+Biblioteke pygame, random, copy
 """
 
 import copy
 import random
+
 import pygame
 
 pygame.init()
 
 
-# Load words from text files
+# Ucitavanje rijeci sa tekstualnog fajla
 def load_words(file_path):
     try:
         with open(file_path, "r", encoding="utf-8") as file:
@@ -19,6 +20,7 @@ def load_words(file_path):
         return []
 
 
+# Klasa jezik koja manipulise jezicima i rijecima
 class Language:
     def __init__(self, languages):
         self.languages = languages
@@ -47,7 +49,7 @@ class Language:
         return len_indexes
 
 
-# Initialize the language variable with a default value
+# inicijalizacija jezika i njihovih vrijednosti
 languages = [("E", "english"), ("B", "bosnian")]
 language_manager = Language(languages)
 
@@ -67,7 +69,38 @@ active_string = ""
 score = 0
 lives = 8
 paused = True
-letters = [
+submit = ""
+# Postavljanje bosanskih i engleskih slova za igru
+english_letters = [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z",
+]
+
+bosnian_letters = [
     "a",
     "b",
     "c",
@@ -86,28 +119,33 @@ letters = [
     "lj",
     "m",
     "n",
+    "nj",
     "o",
     "p",
     "r",
     "s",
     "š",
     "t",
+    "dž",
     "u",
     "v",
     "z",
     "ž",
 ]
-submit = ""
+
+letters = english_letters + [
+    letter for letter in bosnian_letters if letter not in english_letters
+]
 
 word_objects = []
 new_level = True
 # izbori duzine rijeci (od 2 do 8)
 choices = [False, True, False, False, False, False, False]
 # ucitavati slike, fontove, zvucne efekte i ostalo
-header_font = pygame.font.Font("assets/fonts/Monocraft.ttc", 50)
+header_font = pygame.font.Font("assets/fonts/GeistMono-Medium.ttf", 55)
 pause_font = pygame.font.Font("assets/fonts/1up.ttf", 38)
 banner_font = pygame.font.Font("assets/fonts/Square.otf", 38)
-font = pygame.font.Font("assets/fonts/Monocraft.ttc", 48)
+font = pygame.font.Font("assets/fonts/GeistMono-Medium.ttf", 48)
 
 # zvucni efekti i muzika
 pygame.mixer.init()
@@ -231,8 +269,8 @@ def draw_pause():
     # Definisati tekst za meni za pauziranje
     surface.blit(header_font.render("MENI", True, "white"), (60, 60))
     surface.blit(header_font.render("IGRAJ", True, "white"), (200, 175))
-    surface.blit(header_font.render("IZADJI", True, "white"), (450, 175))
-    surface.blit(header_font.render("Duzina rijeci: ", True, "white"), (60, 250))
+    surface.blit(header_font.render("IZAĐI", True, "white"), (450, 175))
+    surface.blit(header_font.render("DUŽINA RIJEČI: ", True, "white"), (60, 250))
 
     # Definisati tipke za duzinu rijeci (koliko slova ima ta rijec)
     for i in range(len(choices)):
@@ -245,12 +283,12 @@ def draw_pause():
             pygame.draw.circle(surface, "#40a02b", (160 + (i * 80), 350), 35, 5)
 
     # Dodati tekst za odabir jezika
-    surface.blit(header_font.render("Odaberi jezik: ", True, "white"), (65, 395))
+    surface.blit(header_font.render("ODABERI JEZIK: ", True, "white"), (65, 395))
 
     # Definisati tipke za odabir jezika
     language_buttons = []
     for idx, (label, lang) in enumerate(languages):
-        btn = Button(160 + (idx * 120), 450, label, False, surface)
+        btn = Button(580 + (idx * 120), 425.5, label, False, surface)
         btn.draw()
         language_buttons.append((btn, lang))
 
