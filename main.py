@@ -1,5 +1,6 @@
-"""Igra: "Tipkarska trka" u pythonu uz pomoc pygame
-Biblioteke pygame, random, copy
+"""Igra: "Tipkarska trka" u pythonu uz pomoc pygame biblioteke
+Biblioteke upotrijebljene:
+pygame, random i copy
 """
 
 import copy
@@ -9,6 +10,15 @@ import pygame
 
 pygame.init()
 
+# Inicijalizacija pygame prozora u fullscreen modu
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+WIDTH, HEIGHT = screen.get_size()
+
+pygame.display.set_caption("Tipkarska Trka - Pygame")
+surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+timer = pygame.time.Clock()
+fps = 60
+
 
 # Ucitavanje rijeci sa tekstualnog fajla
 def load_words(file_path):
@@ -16,12 +26,21 @@ def load_words(file_path):
         with open(file_path, "r", encoding="utf-8") as file:
             return [line.strip() for line in file.readlines()]
     except FileNotFoundError:
-        print(f"Error: The word list for {file_path} is not found.")
+        print(f"Greska: Lista rijeci za {file_path} nije pronadjena.")
         return []
 
 
-# Klasa jezik koja manipulise jezicima i rijecima
 class Language:
+    """
+    Klasa koja manipulise jezicima i rijecima
+
+    Argumenti:
+        languages (list): Lista jezika koja sadrzi tuple (naziv jezika, ime fajla)
+        current_language (str): Trenutni jezik
+        wordlist (list): Lista rijeci za trenutni jezik
+        len_indexes (list): Lista indeksa za duzine rijeci
+    """
+
     def __init__(self, languages):
         self.languages = languages
         self.current_language = "english"
@@ -49,19 +68,10 @@ class Language:
         return len_indexes
 
 
-# inicijalizacija jezika i njihovih vrijednosti
+# Inicijalizacija jezika i njihovih vrijednosti
+# Ovdje se mogu dodati i drugi jezici uz pomoc tuple (naziv jezika, ime fajla)
 languages = [("English", "english"), ("Bosanski", "bosnian")]
 language_manager = Language(languages)
-
-# inicijaliziranje pygame igre
-WIDTH = 1280
-HEIGHT = 960
-screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
-
-pygame.display.set_caption("Tipkarska Trka - Pygame")
-surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-timer = pygame.time.Clock()
-fps = 60
 
 # Varijable za igru
 level = 1
@@ -134,27 +144,32 @@ bosnian_letters = [
     "ž",
 ]
 
+# Za slucaj da rijeci sadrze i druge karaktere osim slova
+other_chars = [" ", ".", ",", "!", "?", ":", ";", "-", "_", "(", ")", "[", "]", "'"]
+
 letters = english_letters + [
     letter for letter in bosnian_letters if letter not in english_letters
 ]
 
+# Napraviti listu koja sadrzi sve karaktere koje korisnik moze koristiti
+letters += other_chars
+
 word_objects = []
 new_level = True
 
-# izbori duzine rijeci (od 2 do 8)
+# Izbori duzine rijeci (od 2 do 8)
 choices = [False, True, False, False, False, False, False]
 
-# ucitavati slike, fontove, zvucne efekte i ostalo
+# Ucitavanje slika, fontova, zvucnih efekata i ostalo
 header_font = pygame.font.Font("assets/fonts/GeistMono-Medium.ttf", 55)
 pause_font = pygame.font.Font("assets/fonts/1up.ttf", 38)
 banner_font = pygame.font.Font("assets/fonts/Square.otf", 38)
 font = pygame.font.Font("assets/fonts/GeistMono-Medium.ttf", 48)
 
-# zvucni efekti i muzika
+# Zvucni efekti i muzika
 pygame.mixer.init()
 pygame.mixer.music.load("assets/sounds/music.mp3")
 pygame.mixer.music.set_volume(0.6)
-# beskonacno se ponavlja muzika
 pygame.mixer.music.play(-1)
 
 click = pygame.mixer.Sound("assets/sounds/mech-click.mp3")
@@ -163,9 +178,9 @@ wrong = pygame.mixer.Sound("assets/sounds/Instrument Strum.mp3")
 
 click.set_volume(0.7)
 woosh.set_volume(0.5)
-wrong.set_volume(0.3)
+wrong.set_volume(0.75)
 
-# generisati score unutar score.txt fajla
+# Generisanje score unutar score.txt fajla
 try:
     with open("score/score.txt", "r") as file:
         read = file.readlines()
@@ -203,7 +218,9 @@ class Word:
         self.x_pos -= self.speed
 
 
-# Add theme management
+# Menadzment tema za igru
+# Tema yorumi se moze pronaci na githubu:
+# https://www.github.com/yorumicolors
 themes = {
     "abyss": {
         "background": "#060914",
@@ -233,6 +250,17 @@ def apply_theme(theme):
 
 
 class Button:
+    """Klasa za kreiranje dugmadi u igri
+
+    Args:
+        x_pos (int): x koordinata
+        y_pos (int): y koordinata
+        text (str): tekst na dugmetu
+        clicked (bool): da li je dugme kliknuto
+        surface (pygame.Surface): povrsina na kojoj se crta dugme
+        shape (str): oblik dugmeta, moze biti "circle" ili "rectangle"
+    """
+
     def __init__(self, x_pos, y_pos, text, clicked, surface, shape="circle"):
         self.x_pos = x_pos
         self.y_pos = y_pos
@@ -258,8 +286,10 @@ class Button:
                     pygame.draw.circle(
                         self.surface, (210, 15, 57), (self.x_pos, self.y_pos), radius
                     )
-            pygame.draw.circle(self.surface, "white", (self.x_pos, self.y_pos), radius, 3)
-        else:  # Rounded rectangle
+            pygame.draw.circle(
+                self.surface, "white", (self.x_pos, self.y_pos), radius, 3
+            )
+        else:  # Zaobljeni pravougaonik
             text_size = pause_font.size(self.text)
             width = text_size[0] + 20
             height = text_size[1] + 20
@@ -275,7 +305,12 @@ class Button:
                     pygame.draw.rect(
                         self.surface,
                         (32, 159, 181),
-                        (self.x_pos - width // 2, self.y_pos - height // 2, width, height),
+                        (
+                            self.x_pos - width // 2,
+                            self.y_pos - height // 2,
+                            width,
+                            height,
+                        ),
                         border_radius=10,
                     )
                     self.clicked = True
@@ -283,7 +318,12 @@ class Button:
                     pygame.draw.rect(
                         self.surface,
                         (210, 15, 57),
-                        (self.x_pos - width // 2, self.y_pos - height // 2, width, height),
+                        (
+                            self.x_pos - width // 2,
+                            self.y_pos - height // 2,
+                            width,
+                            height,
+                        ),
                         border_radius=10,
                     )
             pygame.draw.rect(
@@ -295,27 +335,63 @@ class Button:
             )
         self.surface.blit(
             pause_font.render(self.text, True, "white"),
-            (self.x_pos - pause_font.size(self.text)[0] // 2, self.y_pos - pause_font.size(self.text)[1] // 2),
+            (
+                self.x_pos - pause_font.size(self.text)[0] // 2,
+                self.y_pos - pause_font.size(self.text)[1] // 2,
+            ),
         )
 
-# Update draw_screen and draw_pause to use new Button class and make pause menu fullscreen
+
+# Funkcija koja crta ekran igre na osnovu rezolucije i teme koju korisnik odabere
 def draw_screen():
     pygame.draw.rect(
-        screen, themes[current_theme]["rect_color"], [0, HEIGHT - 100, WIDTH, 100], 0
+        screen,
+        themes[current_theme]["rect_color"],
+        [0, HEIGHT - int(HEIGHT * 0.1), WIDTH, int(HEIGHT * 0.1)],
+        0,
     )
     pygame.draw.rect(screen, "white", [0, 0, WIDTH, HEIGHT], 5)
-    pygame.draw.line(screen, "white", (400, HEIGHT - 100), (400, HEIGHT), 3)
-    pygame.draw.line(screen, "white", (1120, HEIGHT - 100), (1120, HEIGHT), 3)
-    pygame.draw.line(screen, "white", (0, HEIGHT - 100), (WIDTH, HEIGHT - 100), 3)
-    pygame.draw.rect(screen, "black", [0, 0, WIDTH, HEIGHT], 2)
-    screen.blit(header_font.render(f"NIVO:{level}", True, "white"), (10, HEIGHT - 75))
-    screen.blit(
-        header_font.render(f'"{active_string}"', True, "white"), (440, HEIGHT - 75)
+    pygame.draw.line(
+        screen,
+        "white",
+        (int(WIDTH * 0.3125), HEIGHT - int(HEIGHT * 0.1)),
+        (int(WIDTH * 0.3125), HEIGHT),
+        3,
     )
-    pause_but = Button(1196, HEIGHT - 52, "II", False, screen)
+    pygame.draw.line(
+        screen,
+        "white",
+        (int(WIDTH * 0.875), HEIGHT - int(HEIGHT * 0.1)),
+        (int(WIDTH * 0.875), HEIGHT),
+        3,
+    )
+    pygame.draw.line(
+        screen,
+        "white",
+        (0, HEIGHT - int(HEIGHT * 0.1)),
+        (WIDTH, HEIGHT - int(HEIGHT * 0.1)),
+        3,
+    )
+    pygame.draw.rect(screen, "black", [0, 0, WIDTH, HEIGHT], 2)
+    screen.blit(
+        header_font.render(f"NIVO:{level}", True, "white"),
+        (10, HEIGHT - int(HEIGHT * 0.075)),
+    )
+    screen.blit(
+        header_font.render(f'"{active_string}"', True, "white"),
+        (int(WIDTH * 0.34375), HEIGHT - int(HEIGHT * 0.075)),
+    )
+    pause_but = Button(
+        int(WIDTH * 0.9375), HEIGHT - int(HEIGHT * 0.052), "II", False, screen
+    )
     pause_but.draw()
-    screen.blit(banner_font.render(f"Score: {score}", True, "white"), (400, 10))
-    screen.blit(banner_font.render(f"H. score: {high_score}", True, "white"), (880, 10))
+    screen.blit(
+        banner_font.render(f"Score: {score}", True, "white"), (int(WIDTH * 0.3125), 10)
+    )
+    screen.blit(
+        banner_font.render(f"H. score: {high_score}", True, "white"),
+        (int(WIDTH * 0.6875), 10),
+    )
     screen.blit(
         banner_font.render(
             f"Lives: {lives}", True, themes[current_theme]["lives_color"]
@@ -328,38 +404,108 @@ def draw_screen():
 def draw_pause():
     choice_commits = copy.deepcopy(choices)
     surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-    pygame.draw.rect(surface, (0, 0, 0, 100), [150, 150, 1080, 660], 0, 10)
-    pygame.draw.rect(surface, (0, 0, 0, 200), [150, 150, 1080, 660], 5, 10)
+
+    # Kalkulisati dimenzije menija za pauziranje
+    menu_width = int(WIDTH * 0.75)
+    menu_height = int(HEIGHT * 0.75)
+    menu_x = (WIDTH - menu_width) // 2
+    menu_y = (HEIGHT - menu_height) // 2
+
+    pygame.draw.rect(
+        surface, (0, 0, 0, 100), [menu_x, menu_y, menu_width, menu_height], 0, 10
+    )
+    pygame.draw.rect(
+        surface, (0, 0, 0, 200), [menu_x, menu_y, menu_width, menu_height], 5, 10
+    )
 
     # Tipke za meni za pauziranje
-    resume_btn = Button(260, 300, ">", False, surface, shape="circle")
+    resume_btn = Button(
+        menu_x + int(menu_width * 0.1),
+        menu_y + int(menu_height * 0.2),
+        ">",
+        False,
+        surface,
+        shape="circle",
+    )
     resume_btn.draw()
-    quit_btn = Button(710, 300, "X", False, surface, shape="circle")
+    quit_btn = Button(
+        menu_x + int(menu_width * 0.5),
+        menu_y + int(menu_height * 0.2),
+        "X",
+        False,
+        surface,
+        shape="circle",
+    )
     quit_btn.draw()
 
     # Definisati tekst za meni za pauziranje
-    surface.blit(header_font.render("MENI", True, "white"), (180, 180))
-    surface.blit(header_font.render("IGRAJ", True, "white"), (300, 275))
-    surface.blit(header_font.render("IZAĐI", True, "white"), (800, 275))
-    surface.blit(header_font.render("DUŽINA RIJEČI: ", True, "white"), (180, 450))
+    surface.blit(
+        header_font.render("MENI", True, "white"),
+        (menu_x + int(menu_width * 0.03), menu_y + int(menu_height * 0.05)),
+    )
+    surface.blit(
+        header_font.render("IGRAJ", True, "white"),
+        (menu_x + int(menu_width * 0.14), menu_y + int(menu_height * 0.19)),
+    )
+    surface.blit(
+        header_font.render("IZAĐI", True, "white"),
+        (menu_x + int(menu_width * 0.6), menu_y + int(menu_height * 0.19)),
+    )
+    surface.blit(
+        header_font.render("DUŽINA RIJEČI: ", True, "white"),
+        (menu_x + int(menu_width * 0.03), menu_y + int(menu_height * 0.45)),
+    )
 
     # Definisati tipke za duzinu rijeci (koliko slova ima ta rijec)
     for i in range(len(choices)):
-        btn = Button(260 + (i * 120), 550, str(i + 2), False, surface, shape="circle")
+        btn = Button(
+            menu_x + int(menu_width * 0.1) + (i * int(menu_width * 0.1)),
+            menu_y + int(menu_height * 0.6),
+            str(i + 2),
+            False,
+            surface,
+            shape="circle",
+        )
         btn.draw()
         if btn.clicked:
             choice_commits[i] = not choice_commits[i]
 
         if choices[i]:
-            pygame.draw.circle(surface, "#40a02b", (260 + (i * 120), 550), 35, 5)
+            pygame.draw.circle(
+                surface,
+                "#40a02b",
+                (
+                    menu_x + int(menu_width * 0.1) + (i * int(menu_width * 0.1)),
+                    menu_y + int(menu_height * 0.6),
+                ),
+                35,
+                5,
+            )
 
     # Dodati tekst za odabir jezika
-    surface.blit(header_font.render("ODABERI JEZIK: ", True, "white"), (185, 620))
+    surface.blit(
+        header_font.render("ODABERI JEZIK: ", True, "white"),
+        (menu_x + int(menu_width * 0.03), menu_y + int(menu_height * 0.75)),
+    )
 
     # Definisati tipke za odabir jezika
     language_buttons = [
-        Button(800, 650, "English", False, surface, shape="rectangle"),
-        Button(1075, 650, "Bosanski", False, surface, shape="rectangle")
+        Button(
+            menu_x + int(menu_width * 0.6),
+            menu_y + int(menu_height * 0.8),
+            "English",
+            False,
+            surface,
+            shape="rectangle",
+        ),
+        Button(
+            menu_x + int(menu_width * 0.85),
+            menu_y + int(menu_height * 0.8),
+            "Bosanski",
+            False,
+            surface,
+            shape="rectangle",
+        ),
     ]
 
     for btn in language_buttons:
@@ -371,13 +517,36 @@ def draw_pause():
             text_size = pause_font.size(btn.text)
             width = text_size[0] + 20
             height = text_size[1] + 20
-            pygame.draw.rect(surface, "#40a02b", (btn.x_pos - width // 2, btn.y_pos - height // 2, width, height), 5, border_radius=10)
+            pygame.draw.rect(
+                surface,
+                "#40a02b",
+                (btn.x_pos - width // 2, btn.y_pos - height // 2, width, height),
+                5,
+                border_radius=10,
+            )
 
     # Dodati tekst za odabir teme
-    surface.blit(header_font.render("ODABERI TEMU: ", True, "white"), (185, 720))
+    surface.blit(
+        header_font.render("ODABERI TEMU: ", True, "white"),
+        (menu_x + int(menu_width * 0.03), menu_y + int(menu_height * 0.9)),
+    )
     theme_buttons = [
-        Button(800, 750, "Abyss", False, surface, shape="rectangle"),
-        Button(995, 750, "Mist", False, surface, shape="rectangle")
+        Button(
+            menu_x + int(menu_width * 0.6),
+            menu_y + int(menu_height * 0.95),
+            "abyss",
+            False,
+            surface,
+            shape="rectangle",
+        ),
+        Button(
+            menu_x + int(menu_width * 0.87),
+            menu_y + int(menu_height * 0.95),
+            "mist",
+            False,
+            surface,
+            shape="rectangle",
+        ),
     ]
 
     for btn in theme_buttons:
@@ -388,7 +557,8 @@ def draw_pause():
     screen.blit(surface, (0, 0))
     return resume_btn.clicked, choice_commits, quit_btn.clicked
 
-# funkcija koja provjerava korisnikov unos
+
+# Funkcija koja provjerava korisnikov unos
 def check_answer(score):
     for word in word_objects:
         if word.text == submit:
@@ -411,7 +581,8 @@ def generate_level():
                 (language_manager.len_indexes[i], language_manager.len_indexes[i + 1])
             )
     for i in range(level):
-        speed = random.randint(3, 5)
+        # Moze se prilagoditi brzina i pozicija rijeci
+        speed = random.randint(4, 6)
         y_pos = random.randint(10 + (i * vertical_spacing), (i + 1) * vertical_spacing)
         x_pos = random.randint(WIDTH, WIDTH + 1000)
         ind_sel = random.choice(include)
@@ -430,6 +601,7 @@ def check_highscore():
             file.write(str(int(high_score)))
 
 
+# Glavna petlja igra koja se izvrsava sve dok se ne zavrsi igra
 run = True
 while run:
     screen.fill(themes[current_theme]["background"])
@@ -437,6 +609,7 @@ while run:
     pause_but = draw_screen()
 
     if paused:
+        # Prikazi meni za pauziranje ako je igra pauzirana, a ako nije, generisi novi nivo
         resume_but, changes, quit_but = draw_pause()
         if resume_but:
             paused = False
@@ -457,7 +630,6 @@ while run:
     if len(word_objects) <= 0 and not paused:
         level += 1
         new_level = True
-
     if submit != "":
         init = score
         score = check_answer(score)
@@ -469,7 +641,7 @@ while run:
         if event.type == pygame.QUIT:
             check_highscore()
             run = False
-
+        # Provjeriti da li je korisnik kliknuo na dugme
         if event.type == pygame.KEYDOWN:
             if not paused:
                 if event.unicode.lower() in letters:
@@ -490,6 +662,7 @@ while run:
         paused = True
 
     if lives < 0:
+        # Provjeriti da li je korisnik postavio novi highscore i da li su zivoti manje od 0
         paused = True
         level = 1
         lives = 8
@@ -500,4 +673,3 @@ while run:
 
     pygame.display.flip()
 pygame.quit()
-

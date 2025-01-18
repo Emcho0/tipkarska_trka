@@ -1,11 +1,15 @@
-<h1 align="center">Tipkarska Trka</h1>
+<h1 align="center" valign="middle">
+  <img height="90px" src="assets/images/logo.png" alt="Logo" style="border: 3px solid #C6DFEC; border-radius: 10px;">
+  
+  <sup>Tipkarska trka</sup>
+</h1>
 
-<p align="center">
+<p align="center" valign="middle">
    <img src="assets/images/pocetna1.png" alt="Ekran igre">
    Izgled menija igre sa Yorumi Abyss temom
 </p>
 
-<p align="center">
+<p align="center" valign="middle">
    <img src="assets/images/pocetna2.png" alt="Ekran igre">
    Izgled menija igre sa Yorumi Mist temom
 </p>
@@ -14,18 +18,13 @@
 
 **Tipkarska Trka** je edukativna igra koja testira brzinu i preciznost kucanja. Cilj igre je da korisnici kucaju sve riječi koje se pojavljuju tokom igre. Na početku, u prvom "nivo" (krugu), pojavljuje se samo jedna riječ, u sljedećem krugu dvije riječi, i tako redom kako igra napreduje. Broj riječi povećava se sa svakim sljedećim krugom, čineći igru sve zahtjevnijom.
 
-<p align="center">
-   <img src="assets/images/gameplay.png" alt="Ekran igre">
-   Prikaz igre u kojoj riječi iskaču nasumično
-</p>
-
 Igra je **singleplayer**, gdje se korisnik takmiči protiv vremena i svojih vještina tipkanja. Igra traje dok korisnik ne završi sve riječi ili dok ne izgubi sve živote. Ako korisnik izgubi sve živote, igra se vraća na **pauzirani meni**, a korisnik može započeti iznova.
 
 ## Inspiracija
 
 Inspiraciju za igru pružili su tradicionalni testovi brzine tipkanja koji se koriste u različitim disciplinama, ali sa dodatkom zabavnog aspekta takmičenja. Također, značajan izvor inspiracije bila je i igra **MonkeyType**, koja je poznata po tome što testira brzinu tipkanja korisnika, ali na unaprijed definiran način — igrači imaju zadane riječi koje moraju upisivati. U ovoj igri uveden je element dinamike i izazovnosti, jer riječi iskaču na ekranu nasumičnom brzinom. Cilj je stvoriti alat koji pomaže korisnicima da poboljšaju svoje vještine tipkanja, dok se istovremeno zabavljaju.
 
-## Preduslovi za korištenje
+## Preduslovi za upotrebu ovog repozitorija i igranje igre
 
 Za pokretanje igre potrebno je da imate sljedeće instalirano:
 
@@ -36,40 +35,48 @@ Za pokretanje igre potrebno je da imate sljedeće instalirano:
 ## Instalacija
 
 1. Klonirajte ovaj repozitorij na svoj lokalni računar:
+
    ```bash
    git clone https://github.com/Emcho0/tipkarska_trka.git
+   ```
 
 2. Instalirajte uv uz pomoć installera ili pip-a:
-    ```bash
-    pip install uv
-    
-    # Za windows
-    
-    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-    
-    # Za Linux i macOS
-    
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-    
-3. Uđite u direktorij i sinhronizirajte biblioteke i Python verzije, ako to već niste učinili:
+
+   ```bash
+   pip install uv
+
+   # Za windows
+
+   powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+   # Za Linux i macOS
+
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+
+3. Uđite u direktorij i sinhronizirajte biblioteke i Python verziju, ako to već niste učinili:
+
 ```bash
 cd tipkarska_trka
 uv sync
 ```
+
 4. Pokrenite igru:
+
 ```bash
 uv run main.py
 ```
 
 ## Igranje same igre
 
-<p align="center">
+<p align="center" valign="middle">
    <img src="assets/images/bosanski.png" alt="Ekran igre">
     Prikazivanje bosanskih riječi
 </p>
 
-
-<p align="center">
+<p align="center" valign="middle">
    <img src="assets/images/engleski.png" alt="Ekran igre">
     Prikazivanje engleskih riječi
 </p>
+
+> Tema koja je upotrijebljena je [`yorumi`](https://github.com/yorumicolors) i u planu će biti svijetlija verzija `abyss` teme pod nazivom `cloud`.
