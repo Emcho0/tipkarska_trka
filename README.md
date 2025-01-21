@@ -1,5 +1,5 @@
 <h1 align="center" valign="middle">
-  <img height="90px" src="assets/images/logo.png" alt="Logo" style="border: 3px solid #C6DFEC; border-radius: 10px;">
+  <img height="90px" src="assets/images/logo.png" alt="Logo" style="border: 3px solid #FFFFFF; border-radius: 10px;">
   
   <sup>Tipkarska trka</sup>
 </h1>
@@ -79,4 +79,4 @@ uv run main.py
     Prikazivanje engleskih riječi
 </p>
 
-> Tema koja je upotrijebljena je [`yorumi`](https://github.com/yorumicolors) i u planu će biti svijetlija verzija `abyss` teme pod nazivom `cloud`.
+> Tema koja je upotrijebljena je [`yorumi`](https://github.com/yorumicolors) i dodana je treća tema `fog` kao temu koja je svijetlija varijanta `abyss` teme
