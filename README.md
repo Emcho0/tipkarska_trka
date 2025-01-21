@@ -79,4 +79,4 @@ uv run main.py
     Prikazivanje engleskih riječi
 </p>
 
-> Tema koja je upotrijebljena je [`yorumi`](https://github.com/yorumicolors) i dodana je treća tema `fog` kao temu koja je svijetlija varijanta `abyss` teme
+> Tema koja je upotrijebljena je [`yorumi`](https://github.com/yorumicolors) i dodana je treća tema `fog` kao tema koja je svijetlija varijanta `abyss` teme.
