@@ -1,6 +1,7 @@
-"""Igra: "Tipkarska trka" u pythonu uz pomoc pygame biblioteke
-Biblioteke upotrijebljene:
-pygame, random i copy
+"""Igra: "Tipkarska trka" u pythonu uz pomoc pygame biblioteke.
+
+Biblioteke upotrijebljene za projekat:
+pygame, random i copy.
 """
 
 import copy
@@ -8,22 +9,62 @@ import random
 
 import pygame
 
-pygame.init()
-
 # Inicijalizacija pygame prozora u fullscreen modu
+
+pygame.init()
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+pygame.display.set_icon(pygame.image.load("assets/images/logo.png"))
 WIDTH, HEIGHT = screen.get_size()
 
-pygame.display.set_caption("Tipkarska Trka - Pygame")
+# Pocetna rezolucija
+BASE_WIDTH, BASE_HEIGHT = 800, 600
+
+pygame.display.set_caption("Tipkarska Trka", "sss")
 surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
 timer = pygame.time.Clock()
 fps = 60
+
+# Globalne varijabla koja je istinita ako je rezim fullscreen
+fullscreen = True
+
+
+# Funkcija koja prilagodava elemente igre na osnovu rezolucije
+def adjust_game_elements():
+    global pause_menu_rect
+    # Varijable za prilagodjavanje menija za pauziranje
+    pause_menu_width = WIDTH // 2
+    pause_menu_height = HEIGHT // 2
+    pause_menu_rect = pygame.Rect(
+        (WIDTH - pause_menu_width) // 2,
+        (HEIGHT - pause_menu_height) // 2,
+        pause_menu_width,
+        pause_menu_height,
+    )
+
+
+def toggle_screen_resolution():
+    global screen, fullscreen, WIDTH, HEIGHT
+    if fullscreen:
+        # Omogucava korisniku da upotrijebi baznu rezoluciju koja je definisana gore
+        # i moze se povecati na bilo koju sirinu i duzinu
+        screen = pygame.display.set_mode((BASE_WIDTH, BASE_HEIGHT), pygame.RESIZABLE)
+    else:
+        screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    fullscreen = not fullscreen
+    # Uzima na osnovu trenutne rezolucije monitora
+
+    WIDTH, HEIGHT = screen.get_size()
+    adjust_game_elements()
+
+
+# Inicijalno prilagodite elemente igre
+adjust_game_elements()
 
 
 # Ucitavanje rijeci sa tekstualnog fajla
 def load_words(file_path):
     try:
-        with open(file_path, "r", encoding="utf-8") as file:
+        with open(file_path, encoding="utf-8") as file:
             return [line.strip() for line in file.readlines()]
     except FileNotFoundError:
         print(f"Greska: Lista rijeci za {file_path} nije pronadjena.")
@@ -31,14 +72,13 @@ def load_words(file_path):
 
 
 class Language:
-    """
-    Klasa koja manipulise jezicima i rijecima
+    """Klasa koja manipulise jezicima i rijecima.
 
     Argumenti:
         languages (list): Lista jezika koja sadrzi tuple (naziv jezika, ime fajla)
         current_language (str): Trenutni jezik
         wordlist (list): Lista rijeci za trenutni jezik
-        len_indexes (list): Lista indeksa za duzine rijeci
+        len_indexes (list): Lista indeksa za duzine rijeci.
     """
 
     def __init__(self, languages):
@@ -182,7 +222,7 @@ wrong.set_volume(0.75)
 
 # Generisanje score unutar score.txt fajla
 try:
-    with open("score/score.txt", "r") as file:
+    with open("score/score.txt") as file:
         read = file.readlines()
         if read:
             high_score = int(read[0])
@@ -211,7 +251,8 @@ class Word:
         act_len = len(active_string)
         if active_string == self.text[:act_len]:
             screen.blit(
-                font.render(active_string, True, "#40a02b"), (self.x_pos, self.y_pos)
+                font.render(active_string, True, "#40a02b"),
+                (self.x_pos, self.y_pos),
             )
 
     def update(self):
@@ -238,6 +279,15 @@ themes = {
         "rect_color": "#1D202B",
         "selection_background": "#343742",
     },
+    # Nova tema koja je svijetlija varijanta "Abyss" teme
+    "fog": {
+        "background": "#1D202B",
+        "foreground": "#BDBFCB",
+        "text_color": "#BDBFCB",
+        "lives_color": "#1C4642",
+        "rect_color": "#878996",
+        "selection_background": "#343742",
+    },
 }
 current_theme = "abyss"
 
@@ -259,6 +309,7 @@ class Button:
         clicked (bool): da li je dugme kliknuto
         surface (pygame.Surface): povrsina na kojoj se crta dugme
         shape (str): oblik dugmeta, moze biti "circle" ili "rectangle"
+
     """
 
     def __init__(self, x_pos, y_pos, text, clicked, surface, shape="circle"):
@@ -273,21 +324,34 @@ class Button:
         if self.shape == "circle":
             radius = 35
             circle = pygame.draw.circle(
-                self.surface, (23, 146, 153), (self.x_pos, self.y_pos), radius
+                self.surface,
+                (23, 146, 153),
+                (self.x_pos, self.y_pos),
+                radius,
             )
             if circle.collidepoint(pygame.mouse.get_pos()):
                 buttons = pygame.mouse.get_pressed()
                 if buttons[0]:
                     pygame.draw.circle(
-                        self.surface, (32, 159, 181), (self.x_pos, self.y_pos), radius
+                        self.surface,
+                        (32, 159, 181),
+                        (self.x_pos, self.y_pos),
+                        radius,
                     )
                     self.clicked = True
                 else:
                     pygame.draw.circle(
-                        self.surface, (210, 15, 57), (self.x_pos, self.y_pos), radius
+                        self.surface,
+                        (210, 15, 57),
+                        (self.x_pos, self.y_pos),
+                        radius,
                     )
             pygame.draw.circle(
-                self.surface, "white", (self.x_pos, self.y_pos), radius, 3
+                self.surface,
+                "white",
+                (self.x_pos, self.y_pos),
+                radius,
+                3,
             )
         else:  # Zaobljeni pravougaonik
             text_size = pause_font.size(self.text)
@@ -382,11 +446,16 @@ def draw_screen():
         (int(WIDTH * 0.34375), HEIGHT - int(HEIGHT * 0.075)),
     )
     pause_but = Button(
-        int(WIDTH * 0.9375), HEIGHT - int(HEIGHT * 0.052), "II", False, screen
+        int(WIDTH * 0.9375),
+        HEIGHT - int(HEIGHT * 0.052),
+        "II",
+        False,
+        screen,
     )
     pause_but.draw()
     screen.blit(
-        banner_font.render(f"Score: {score}", True, "white"), (int(WIDTH * 0.3125), 10)
+        banner_font.render(f"Score: {score}", True, "white"),
+        (int(WIDTH * 0.3125), 10),
     )
     screen.blit(
         banner_font.render(f"H. score: {high_score}", True, "white"),
@@ -394,7 +463,9 @@ def draw_screen():
     )
     screen.blit(
         banner_font.render(
-            f"Lives: {lives}", True, themes[current_theme]["lives_color"]
+            f"Lives: {lives}",
+            True,
+            themes[current_theme]["lives_color"],
         ),
         (10, 10),
     )
@@ -412,15 +483,23 @@ def draw_pause():
     menu_y = (HEIGHT - menu_height) // 2
 
     pygame.draw.rect(
-        surface, (0, 0, 0, 100), [menu_x, menu_y, menu_width, menu_height], 0, 10
+        surface,
+        (0, 0, 0, 100),
+        [menu_x, menu_y, menu_width, menu_height],
+        0,
+        10,
     )
     pygame.draw.rect(
-        surface, (0, 0, 0, 200), [menu_x, menu_y, menu_width, menu_height], 5, 10
+        surface,
+        (0, 0, 0, 200),
+        [menu_x, menu_y, menu_width, menu_height],
+        5,
+        10,
     )
 
     # Tipke za meni za pauziranje
     resume_btn = Button(
-        menu_x + int(menu_width * 0.1),
+        menu_x + int(menu_width * 0.20),
         menu_y + int(menu_height * 0.2),
         ">",
         False,
@@ -429,8 +508,8 @@ def draw_pause():
     )
     resume_btn.draw()
     quit_btn = Button(
-        menu_x + int(menu_width * 0.5),
-        menu_y + int(menu_height * 0.2),
+        menu_x + int(menu_width * 0.20),
+        menu_y + int(menu_height * 0.4),
         "X",
         False,
         surface,
@@ -445,11 +524,11 @@ def draw_pause():
     )
     surface.blit(
         header_font.render("IGRAJ", True, "white"),
-        (menu_x + int(menu_width * 0.14), menu_y + int(menu_height * 0.19)),
+        (menu_x + int(menu_width * 0.25), menu_y + int(menu_height * 0.15)),
     )
     surface.blit(
         header_font.render("IZAĐI", True, "white"),
-        (menu_x + int(menu_width * 0.6), menu_y + int(menu_height * 0.19)),
+        (menu_x + int(menu_width * 0.25), menu_y + int(menu_height * 0.35)),
     )
     surface.blit(
         header_font.render("DUŽINA RIJEČI: ", True, "white"),
@@ -491,7 +570,7 @@ def draw_pause():
     # Definisati tipke za odabir jezika
     language_buttons = [
         Button(
-            menu_x + int(menu_width * 0.6),
+            menu_x + int(menu_width * 0.466),
             menu_y + int(menu_height * 0.8),
             "English",
             False,
@@ -499,7 +578,7 @@ def draw_pause():
             shape="rectangle",
         ),
         Button(
-            menu_x + int(menu_width * 0.85),
+            menu_x + int(menu_width * 0.65),
             menu_y + int(menu_height * 0.8),
             "Bosanski",
             False,
@@ -528,21 +607,30 @@ def draw_pause():
     # Dodati tekst za odabir teme
     surface.blit(
         header_font.render("ODABERI TEMU: ", True, "white"),
-        (menu_x + int(menu_width * 0.03), menu_y + int(menu_height * 0.9)),
+        (menu_x + int(menu_width * 0.03), menu_y + int(menu_height * 0.65)),
     )
     theme_buttons = [
         Button(
-            menu_x + int(menu_width * 0.6),
-            menu_y + int(menu_height * 0.95),
+            menu_x + int(menu_width * 0.45),
+            menu_y + int(menu_height * 0.7),
             "abyss",
             False,
             surface,
             shape="rectangle",
         ),
         Button(
-            menu_x + int(menu_width * 0.87),
-            menu_y + int(menu_height * 0.95),
+            menu_x + int(menu_width * 0.6),
+            menu_y + int(menu_height * 0.7),
             "mist",
+            False,
+            surface,
+            shape="rectangle",
+        ),
+        # Nova tema fog
+        Button(
+            menu_x + int(menu_width * 0.72),
+            menu_y + int(menu_height * 0.7),
+            "fog",
             False,
             surface,
             shape="rectangle",
@@ -578,10 +666,11 @@ def generate_level():
     for i in range(len(choices)):
         if choices[i] and i + 1 < len(language_manager.len_indexes):
             include.append(
-                (language_manager.len_indexes[i], language_manager.len_indexes[i + 1])
+                (language_manager.len_indexes[i], language_manager.len_indexes[i + 1]),
             )
     for i in range(level):
         # Moze se prilagoditi brzina i pozicija rijeci
+        # Vece vrijednosti -> brza igra
         speed = random.randint(4, 6)
         y_pos = random.randint(10 + (i * vertical_spacing), (i + 1) * vertical_spacing)
         x_pos = random.randint(WIDTH, WIDTH + 1000)
@@ -596,12 +685,13 @@ def generate_level():
 def check_highscore():
     global high_score
     if score > high_score:
+        # Novi highscore stavlja kao taj i spasava ga u score.txt fajl
         high_score = score
         with open("score/score.txt", "w") as file:
             file.write(str(int(high_score)))
 
 
-# Glavna petlja igra koja se izvrsava sve dok se ne zavrsi igra
+# Glavna petlja igre
 run = True
 while run:
     screen.fill(themes[current_theme]["background"])
@@ -641,8 +731,10 @@ while run:
         if event.type == pygame.QUIT:
             check_highscore()
             run = False
-        # Provjeriti da li je korisnik kliknuo na dugme
-        if event.type == pygame.KEYDOWN:
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_F12:
+                # Tipkom F12 prilagodjavamo između windowed i fullscreen rezima
+                toggle_screen_resolution()
             if not paused:
                 if event.unicode.lower() in letters:
                     active_string += event.unicode.lower()
@@ -653,8 +745,11 @@ while run:
                 if event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
                     submit = active_string
                     active_string = ""
-            if event.key == pygame.K_ESCAPE:
-                paused = not paused
+        elif event.type == pygame.VIDEORESIZE:
+            if not fullscreen:
+                WIDTH, HEIGHT = event.w, event.h
+                screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+                adjust_game_elements()
         if event.type == pygame.MOUSEBUTTONUP and paused:
             if event.button == 1:
                 choices = changes
