@@ -57,7 +57,6 @@ def toggle_screen_resolution():
     adjust_game_elements()
 
 
-# Inicijalno prilagodite elemente igre
 adjust_game_elements()
 
 
@@ -72,15 +71,6 @@ def load_words(file_path):
 
 
 class Language:
-    """Klasa koja manipulise jezicima i rijecima.
-
-    Argumenti:
-        languages (list): Lista jezika koja sadrzi tuple (naziv jezika, ime fajla)
-        current_language (str): Trenutni jezik
-        wordlist (list): Lista rijeci za trenutni jezik
-        len_indexes (list): Lista indeksa za duzine rijeci.
-    """
-
     def __init__(self, languages):
         self.languages = languages
         self.current_language = "english"
@@ -279,7 +269,6 @@ themes = {
         "rect_color": "#1D202B",
         "selection_background": "#343742",
     },
-    # Nova tema koja je svijetlija varijanta "Abyss" teme
     "fog": {
         "background": "#1D202B",
         "foreground": "#BDBFCB",
@@ -626,7 +615,6 @@ def draw_pause():
             surface,
             shape="rectangle",
         ),
-        # Nova tema fog
         Button(
             menu_x + int(menu_width * 0.72),
             menu_y + int(menu_height * 0.7),

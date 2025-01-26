@@ -14,6 +14,11 @@
    Izgled menija igre sa Yorumi Mist temom
 </p>
 
+<p align="center" valign="middle">
+   <img src="assets/images/pocetna3.png" alt="Ekran igre">
+   Izgled menija igre sa nezvaničnom "Yorumi Fog" temom
+</p>
+
 ## Kratki opis igre
 
 **Tipkarska Trka** je edukativna igra koja testira brzinu i preciznost kucanja. Cilj igre je da korisnici kucaju sve riječi koje se pojavljuju tokom igre. Na početku, u prvom "nivo" (krugu), pojavljuje se samo jedna riječ, u sljedećem krugu dvije riječi, i tako redom kako igra napreduje. Broj riječi povećava se sa svakim sljedećim krugom, čineći igru sve zahtjevnijom.
