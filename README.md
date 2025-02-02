@@ -4,6 +4,7 @@
   <sup>Tipkarska trka</sup>
 </h1>
 
+## Opcije za odabir tema - Yorumi [ Abyss, Mist, Shade, Kraken ]
 <p align="center" valign="middle">
    <img src="assets/images/pocetna1.png" alt="Ekran igre">
    Izgled menija igre sa Yorumi Abyss temom
@@ -16,7 +17,12 @@
 
 <p align="center" valign="middle">
    <img src="assets/images/pocetna3.png" alt="Ekran igre">
-   Izgled menija igre sa nezvaničnom "Yorumi Fog" temom
+   Izgled menija igre sa Yorumi Shade temom
+</p>
+
+<p align="center" valign="middle">
+   <img src="assets/images/pocetna3.png" alt="Ekran igre">
+   Izgled menija igre sa Yorumi Kraken temom
 </p>
 
 ## Kratki opis igre
