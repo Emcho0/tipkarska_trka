@@ -21,7 +21,7 @@
 </p>
 
 <p align="center" valign="middle">
-   <img src="assets/images/pocetna3.png" alt="Ekran igre">
+   <img src="assets/images/pocetna4.png" alt="Ekran igre">
    Izgled menija igre sa Yorumi Kraken temom
 </p>
 
