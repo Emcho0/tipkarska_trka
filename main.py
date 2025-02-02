@@ -18,7 +18,7 @@ WIDTH, HEIGHT = screen.get_size()
 # Bazna rezolucija (koristi se za odnose kod skaliranja)
 BASE_WIDTH, BASE_HEIGHT = 800, 600
 
-pygame.display.set_caption("Tipkarska Trka", "sss")
+pygame.display.set_caption("Tipkarska Trka")
 surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
 timer = pygame.time.Clock()
 fps = 60
@@ -112,67 +112,11 @@ submit = ""
 
 # Postavljanje bosanskih i engleskih slova za igru
 english_letters = [
-    "a",
-    "b",
-    "c",
-    "d",
-    "e",
-    "f",
-    "g",
-    "h",
-    "i",
-    "j",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "p",
-    "q",
-    "r",
-    "s",
-    "t",
-    "u",
-    "v",
-    "w",
-    "x",
-    "y",
-    "z",
+    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
 ]
-
 bosnian_letters = [
-    "a",
-    "b",
-    "c",
-    "č",
-    "ć",
-    "d",
-    "đ",
-    "e",
-    "f",
-    "g",
-    "h",
-    "i",
-    "j",
-    "k",
-    "l",
-    "lj",
-    "m",
-    "n",
-    "nj",
-    "o",
-    "p",
-    "r",
-    "s",
-    "š",
-    "t",
-    "dž",
-    "u",
-    "v",
-    "z",
-    "ž",
+    "a", "b", "c", "č", "ć", "d", "dž", "đ", "e", "f", "g", "h", "i". "j", "k", "l", "lj", "m", "n", "nj", "o", "p", "r", "s", "š", "t", "u", "v", "z", "ž"
 ]
-
 # Za slucaj da rijeci sadrze i druge karaktere osim slova
 other_chars = [" ", ".", ",", "!", "?", ":", ";", "-", "_", "(", ")", "[", "]", "'"]
 
@@ -423,12 +367,7 @@ def draw_screen():
     pygame.draw.rect(
         screen,
         themes[current_theme]["rect_color"],
-        [
-            0,
-            HEIGHT - get_scaled_value(60),
-            WIDTH,
-            get_scaled_value(60),
-        ],
+        [0, HEIGHT - get_scaled_value(60), WIDTH, get_scaled_value(60)],
         0,
     )
     pygame.draw.rect(screen, "white", [0, 0, WIDTH, HEIGHT], 5)
@@ -458,17 +397,11 @@ def draw_screen():
 
     screen.blit(
         header_font.render(f"NIVO:{level}", True, "white"),
-        (
-            get_scaled_value(LEVEL_X_BASE),
-            HEIGHT - get_scaled_value(LEVEL_Y_OFFSET),
-        ),
+        (get_scaled_value(LEVEL_X_BASE), HEIGHT - get_scaled_value(LEVEL_Y_OFFSET)),
     )
     screen.blit(
         header_font.render(f'"{active_string}"', True, "white"),
-        (
-            get_scaled_value(280),
-            HEIGHT - get_scaled_value(LEVEL_Y_OFFSET),
-        ),
+        (get_scaled_value(280), HEIGHT - get_scaled_value(LEVEL_Y_OFFSET)),
     )
 
     pause_button = Button(
@@ -490,7 +423,9 @@ def draw_screen():
     )
     screen.blit(
         banner_font.render(
-            f"Lives: {lives}", True, themes[current_theme]["lives_color"]
+            f"Lives: {lives}",
+            True,
+            themes[current_theme]["lives_color"],
         ),
         (get_scaled_value(LIVES_X_BASE), get_scaled_value(LIVES_Y_BASE)),
     )
@@ -689,7 +624,7 @@ def generate_level():
     for i in range(len(choices)):
         if choices[i] and i + 1 < len(language_manager.len_indexes):
             include.append(
-                (language_manager.len_indexes[i], language_manager.len_indexes[i + 1])
+                (language_manager.len_indexes[i], language_manager.len_indexes[i + 1]),
             )
     for i in range(level):
         speed = random.randint(4, 6)
