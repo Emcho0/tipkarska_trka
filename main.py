@@ -115,7 +115,7 @@ english_letters = [
     "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
 ]
 bosnian_letters = [
-    "a", "b", "c", "č", "ć", "d", "dž", "đ", "e", "f", "g", "h", "i". "j", "k", "l", "lj", "m", "n", "nj", "o", "p", "r", "s", "š", "t", "u", "v", "z", "ž"
+    "a", "b", "c", "č", "ć", "d", "dž", "đ", "e", "f", "g", "h", "i", "j", "k", "l", "lj", "m", "n", "nj", "o", "p", "r", "s", "š", "t", "u", "v", "z", "ž"
 ]
 # Za slucaj da rijeci sadrze i druge karaktere osim slova
 other_chars = [" ", ".", ",", "!", "?", ":", ";", "-", "_", "(", ")", "[", "]", "'"]
