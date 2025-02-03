@@ -49,6 +49,18 @@ def adjust_game_elements():
     )
 
 
+def update_fonts():
+    # Reinicijalizacija fontova na osnovu trenutne rezolucije
+    global header_font, pause_font, banner_font, font
+    header_font = pygame.font.Font(
+        "assets/fonts/GeistMono-Medium.ttf",
+        get_scaled_font(45),
+    )
+    pause_font = pygame.font.Font("assets/fonts/1up.ttf", get_scaled_font(20))
+    banner_font = pygame.font.Font("assets/fonts/Square.otf", get_scaled_font(38))
+    font = pygame.font.Font("assets/fonts/GeistMono-Medium.ttf", get_scaled_font(45))
+
+
 def toggle_screen_resolution():
     global screen, fullscreen, WIDTH, HEIGHT
     if fullscreen:
@@ -58,6 +70,7 @@ def toggle_screen_resolution():
     fullscreen = not fullscreen
     WIDTH, HEIGHT = screen.get_size()
     adjust_game_elements()
+    update_fonts()
 
 
 def load_words(file_path):
@@ -98,7 +111,7 @@ class Language:
 
 
 # Inicijalizacija jezika i njihovih vrijednosti
-# Ovdje se mogu dodati i drugi jezici uz pomoc tuple (naziv jezika, ime fajla)
+#
 languages = [("English", "english"), ("Bosanski", "bosnian")]
 language_manager = Language(languages)
 
@@ -111,11 +124,15 @@ paused = True
 submit = ""
 
 # Postavljanje bosanskih i engleskih slova za igru
+# fmt: off
 english_letters = [
-    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
+    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o",
+    "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
 ]
+# fmt: off
 bosnian_letters = [
-    "a", "b", "c", "č", "ć", "d", "dž", "đ", "e", "f", "g", "h", "i", "j", "k", "l", "lj", "m", "n", "nj", "o", "p", "r", "s", "š", "t", "u", "v", "z", "ž"
+    "a", "b", "c", "č", "ć", "d", "dž", "đ", "e", "f", "g", "h", "i", "j", "k", "l",
+    "lj", "m", "n", "nj", "o", "p", "r", "s", "š", "t", "u", "v", "z", "ž",
 ]
 # Za slucaj da rijeci sadrze i druge karaktere osim slova
 other_chars = [" ", ".", ",", "!", "?", ":", ";", "-", "_", "(", ")", "[", "]", "'"]
@@ -131,11 +148,8 @@ new_level = True
 
 choices = [False, True, False, False, False, False, False]
 
-# Ucitavanje fontova
-header_font = pygame.font.Font("assets/fonts/GeistMono-Medium.ttf", get_scaled_font(45))
-pause_font = pygame.font.Font("assets/fonts/1up.ttf", get_scaled_font(20))
-banner_font = pygame.font.Font("assets/fonts/Square.otf", get_scaled_font(38))
-font = pygame.font.Font("assets/fonts/GeistMono-Medium.ttf", get_scaled_font(45))
+# Ucitavanje fontova – inicijaliziramo ih jednom, a potom ih ažuriramo prilikom promjene rezolucije
+update_fonts()
 
 pygame.mixer.init()
 pygame.mixer.music.load("assets/sounds/music.mp3")
@@ -207,7 +221,6 @@ themes = {
         "rect_color": "#A7A9B5",
         "selection_background": "#343742",
     },
-    # Nove zvanicne teme "shade" i "kraken"
     "shade": {
         "background": "#0F1015",
         "foreground": "#BDBFCB",
@@ -355,7 +368,7 @@ class Button:
                 3,
                 border_radius=10,
             )
-        # crta tekst unutra
+        # Crta tekst unutra
         text_w, text_h = pause_font.size(self.text)
         self.surface.blit(
             pause_font.render(self.text, True, "white"),
@@ -395,6 +408,7 @@ def draw_screen():
     )
     pygame.draw.rect(screen, "black", [0, 0, WIDTH, HEIGHT], 2)
 
+    # Koristimo header_font koji se ažurira prilikom promjene rezolucije
     screen.blit(
         header_font.render(f"NIVO:{level}", True, "white"),
         (get_scaled_value(LEVEL_X_BASE), HEIGHT - get_scaled_value(LEVEL_Y_OFFSET)),
@@ -478,7 +492,7 @@ def draw_pause():
 
     surface.blit(
         header_font.render("MENI", True, "white"),
-        (menu_x + get_scaled_value(20), menu_y + get_scaled_value(30)),
+        (menu_x + get_scaled_value(10), menu_y + get_scaled_value(20)),
     )
     surface.blit(
         header_font.render("IGRAJ", True, "white"),
@@ -705,6 +719,8 @@ while run:
                 WIDTH, HEIGHT = event.w, event.h
                 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
                 adjust_game_elements()
+                # Pored prilagođavanja elemenata prilagođavamo i veličinu fontova na osnovu trenutne rezolucije
+                update_fonts()
         if event.type == pygame.MOUSEBUTTONUP and paused:
             if event.button == 1:
                 choices = changes
