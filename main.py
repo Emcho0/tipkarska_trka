@@ -56,7 +56,7 @@ def update_fonts():
         "assets/fonts/GeistMono-Medium.ttf",
         get_scaled_font(45),
     )
-    pause_font = pygame.font.Font("assets/fonts/1up.ttf", get_scaled_font(20))
+    pause_font = pygame.font.Font("assets/fonts/1up.ttc", get_scaled_font(20))
     banner_font = pygame.font.Font("assets/fonts/Square.otf", get_scaled_font(38))
     font = pygame.font.Font("assets/fonts/GeistMono-Medium.ttf", get_scaled_font(45))
 
