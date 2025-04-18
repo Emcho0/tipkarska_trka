@@ -8,3 +8,8 @@ dependencies = ["pygame>=2.6.1"]
 [tool.pyright]
 venvPath = "."
 venv = ".venv"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.11.6",
+]

@@ -148,7 +148,8 @@ new_level = True
 
 choices = [False, True, False, False, False, False, False]
 
-# Ucitavanje fontova – inicijaliziramo ih jednom, a potom ih ažuriramo prilikom promjene rezolucije
+# Ucitavanje fontova – inicijaliziramo ih jednom, a potom ih ažuriramo
+# prilikom promjene rezolucije
 update_fonts()
 
 pygame.mixer.init()
@@ -719,7 +720,8 @@ while run:
                 WIDTH, HEIGHT = event.w, event.h
                 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
                 adjust_game_elements()
-                # Pored prilagođavanja elemenata prilagođavamo i veličinu fontova na osnovu trenutne rezolucije
+                # Pored prilagođavanja elemenata prilagođavamo i veličinu fontova
+                # na osnovu trenutne rezolucije
                 update_fonts()
         if event.type == pygame.MOUSEBUTTONUP and paused:
             if event.button == 1:
