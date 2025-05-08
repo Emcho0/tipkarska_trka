@@ -223,7 +223,7 @@ themes = {
         "selection_background": "#343742",
     },
     "shade": {
-        "background": "#0F1015",
+        "background": "#0F101B",
         "foreground": "#BDBFCB",
         "text_color": "#BDBFCB",
         "lives_color": "#697F4D",
